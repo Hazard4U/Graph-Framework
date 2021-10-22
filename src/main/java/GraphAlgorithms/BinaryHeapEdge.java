@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Collection.Triple;
-import Nodes.DirectedNode;
 import Nodes.UndirectedNode;
 
 public class BinaryHeapEdge {
@@ -13,14 +12,14 @@ public class BinaryHeapEdge {
 	 * A list structure for a faster management of the heap by indexing
 	 * 
 	 */
-	private  List<Triple<UndirectedNode,UndirectedNode,Integer>> binh;
+	private  List<Triple<UndirectedNode,UndirectedNode,Integer>> edges;
 
     public BinaryHeapEdge() {
-        this.binh = new ArrayList<>();
+        this.edges = new ArrayList<>();
     }
 
     public boolean isEmpty() {
-        return binh.isEmpty();
+        return edges.isEmpty();
     }
 
     /**
@@ -54,8 +53,8 @@ public class BinaryHeapEdge {
 	 * @param src an index of the list edges
 	 * @return the index of the child edge with the least weight
 	 */
-    private int getBestChildPos(int src) {
-    	int lastIndex = binh.size()-1; 
+    private int getBestChildnodesPos(int src) {
+    	int lastIndex = edges.size()-1;
         if (isLeaf(src)) { // the leaf is a stopping case, then we return a default value
             return Integer.MAX_VALUE;
         } else {
@@ -77,9 +76,9 @@ public class BinaryHeapEdge {
 	 * @param child an index of the list edges
 	 */
     private void swap(int father, int child) {         
-    	Triple<UndirectedNode,UndirectedNode,Integer> temp = new Triple<>(binh.get(father).getFirst(), binh.get(father).getSecond(), binh.get(father).getThird());
-    	binh.get(father).setTriple(binh.get(child));
-    	binh.get(child).setTriple(temp);
+    	Triple<UndirectedNode,UndirectedNode,Integer> temp = new Triple<>(edges.get(father).getFirst(), edges.get(father).getSecond(), edges.get(father).getThird());
+    	edges.get(father).setTriple(edges.get(child));
+    	edges.get(child).setTriple(temp);
     }
 
     
@@ -90,7 +89,7 @@ public class BinaryHeapEdge {
 	 */
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (Triple<UndirectedNode,UndirectedNode,Integer> no: binh) {
+        for (Triple<UndirectedNode,UndirectedNode,Integer> no: edges) {
             s.append(no).append(", ");
         }
         return s.toString();
@@ -110,8 +109,8 @@ public class BinaryHeapEdge {
 	 * 
 	 */	
 	public void lovelyPrinting(){
-		int nodeWidth = this.binh.get(0).toString().length();
-		int depth = 1+(int)(Math.log(this.binh.size())/Math.log(2));
+		int nodeWidth = this.edges.get(0).toString().length();
+		int depth = 1+(int)(Math.log(this.edges.size())/Math.log(2));
 		int index=0;
 		
 		for(int h = 1; h<=depth; h++){
@@ -119,8 +118,8 @@ public class BinaryHeapEdge {
 			int between = ((int) (Math.pow(2, depth-h))-1)*nodeWidth;
 			int i =0;
 			System.out.print(space(left));
-			while(i<Math.pow(2, h-1) && index<binh.size()){
-				System.out.print(binh.get(index) + space(between));
+			while(i<Math.pow(2, h-1) && index< edges.size()){
+				System.out.print(edges.get(index) + space(between));
 				index++;
 				i++;
 			}
@@ -144,17 +143,17 @@ public class BinaryHeapEdge {
     }
 
     private boolean testRec(int root) {
-    	int lastIndex = binh.size()-1; 
+    	int lastIndex = edges.size()-1;
         if (isLeaf(root)) {
             return true;
         } else {
             int left = 2 * root + 1;
             int right = 2 * root + 2;
             if (right >= lastIndex) {
-                return binh.get(left).getThird() >= binh.get(root).getThird() && testRec(left);
+                return edges.get(left).getThird() >= edges.get(root).getThird() && testRec(left);
             } else {
-                return binh.get(left).getThird() >= binh.get(root).getThird() && testRec(left)
-                    && binh.get(right).getThird() >= binh.get(root).getThird() && testRec(right);
+                return edges.get(left).getThird() >= edges.get(root).getThird() && testRec(left)
+                    && edges.get(right).getThird() >= edges.get(root).getThird() && testRec(right);
             }
         }
     }

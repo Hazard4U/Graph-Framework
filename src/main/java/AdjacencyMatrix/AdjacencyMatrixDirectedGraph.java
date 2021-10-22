@@ -5,13 +5,14 @@ import GraphAlgorithms.GraphTools;
 import Nodes.AbstractNode;
 import Nodes.DirectedNode;
 import Abstraction.IDirectedGraph;
+import Nodes.UndirectedNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class represents the directed graphs structured by an adjacency matrix.
- * It is possible to have simple and multiple graph
+ * It is nodes.size()sible to have simple and multiple graph
  */
 public class AdjacencyMatrixDirectedGraph extends AbstractMatrixGraph<DirectedNode> implements IDirectedGraph {
 
@@ -76,8 +77,7 @@ public class AdjacencyMatrixDirectedGraph extends AbstractMatrixGraph<DirectedNo
 	
 	@Override
 	public boolean isArc(DirectedNode from, DirectedNode to) {
-		// A completer
-		return true;
+		return matrix[from.getLabel()][to.getLabel()] > 0;
 	}
 
 	/**
@@ -85,7 +85,9 @@ public class AdjacencyMatrixDirectedGraph extends AbstractMatrixGraph<DirectedNo
 	 */
 	@Override
 	public void removeArc(DirectedNode from, DirectedNode to) {
-		// A completer
+		if(isArc(from,to)){
+			matrix[from.getLabel()][to.getLabel()]--;
+		}
 	}
 
 	/**
@@ -93,7 +95,7 @@ public class AdjacencyMatrixDirectedGraph extends AbstractMatrixGraph<DirectedNo
 	 */
 	@Override
 	public void addArc(DirectedNode from, DirectedNode to) {
-		// A completer
+		matrix[from.getLabel()][to.getLabel()]++;
 	}
 
 
@@ -144,6 +146,12 @@ public class AdjacencyMatrixDirectedGraph extends AbstractMatrixGraph<DirectedNo
 		for (Integer integer : t2) {
 			System.out.print(integer + ", ");
 		}
+		System.out.println(am.isArc(new DirectedNode(1),new DirectedNode(2)));
+		for(int i = 0; i<3;i++)
+			am.addArc(new DirectedNode(1), new DirectedNode(2));
+		System.out.println(am);
+		am.removeArc(new DirectedNode(1), new DirectedNode(2));
+		System.out.println(am);
 		// A completer
 	}
 }
