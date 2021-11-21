@@ -38,17 +38,6 @@ public class BinaryHeap {
         return new int[]{src * 2 + 1, src * 2 + 2};
     }
 
-    private int smallestChildIndex(int src) {
-        int[] childs = getChildsIndex(src);
-        int smallestChildIndex = Integer.MAX_VALUE;
-        if (nodes.size() > childs[1]){
-            smallestChildIndex = nodes.get(childs[0]) > nodes.get(childs[1]) ? childs[1] : childs[0];
-        }else if (nodes.size() > childs[0]){
-            smallestChildIndex = childs[0];
-        }
-        return smallestChildIndex;
-    }
-
     public int remove() {
         int value = nodes.get(0);
         swap(nodes.size()-1, 0);
@@ -59,15 +48,30 @@ public class BinaryHeap {
         return value;
     }
 
-    private int getBestChildPos(int src) {
-        if (isLeaf(src)) { // the leaf is a stopping case, then we return a default value
-            return Integer.MAX_VALUE;
-        } else {
-            getBestChildPos((src - 1) / 2);
-            return Integer.MAX_VALUE;
+    private void percolateDown(int src) {
+        if (isLeaf(src)) {
+            return;
+        }
+
+        int smallest = smallestChildIndex(src);
+
+        if (nodes.get(src) > nodes.get(smallest)) {
+            swap(src, smallest);
+
+            percolateDown(smallest);
         }
     }
 
+    private int smallestChildIndex(int src) {
+        int[] childs = getChildsIndex(src);
+        int smallestChildIndex = Integer.MAX_VALUE;
+        if (nodes.size() > childs[1]){
+            smallestChildIndex = nodes.get(childs[0]) > nodes.get(childs[1]) ? childs[1] : childs[0];
+        }else if (nodes.size() > childs[0]){
+            smallestChildIndex = childs[0];
+        }
+        return smallestChildIndex;
+    }
 
     /**
      * Test if the node is a leaf in the binary heap
@@ -86,8 +90,8 @@ public class BinaryHeap {
 
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < pos; i++) {
-            s.append(nodes[i]).append(", ");
+        for (int i = 0; i < nodes.size(); i++) {
+            s.append(nodes.get(i)).append(", ");
         }
         return s.toString();
     }
@@ -107,10 +111,10 @@ public class BinaryHeap {
         } else {
             int left = 2 * root + 1;
             int right = 2 * root + 2;
-            if (right >= pos) {
-                return nodes[left] >= nodes[root] && testRec(left);
+            if (right >= nodes.size()) {
+                return nodes.get(left) >= nodes.get(root) && testRec(left);
             } else {
-                return nodes[left] >= nodes[root] && testRec(left) && nodes[right] >= nodes[root] && testRec(right);
+                return nodes.get(left) >= nodes.get(root) && testRec(left) && nodes.get(right) >= nodes.get(root) && testRec(right);
             }
         }
     }
@@ -124,13 +128,19 @@ public class BinaryHeap {
         int max = 20;
         while (k > 0) {
             int rand = min + (int) (Math.random() * ((max - min) + 1));
-            System.out.print("insert " + rand);
             jarjarBin.insert(rand);
             k--;
         }
+
         // A completer
         System.out.println("\n" + jarjarBin);
-        System.out.println(jarjarBin.test());
+        System.out.println("test : " + jarjarBin.test());
+
+        System.out.println("\nRemove root :");
+        jarjarBin.remove();
+        System.out.println(jarjarBin);
+        System.out.println("test : " + jarjarBin.test());
+
     }
 
 }
