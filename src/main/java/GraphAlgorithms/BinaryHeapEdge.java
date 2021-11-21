@@ -30,8 +30,22 @@ public class BinaryHeapEdge {
 	 * @param val the edge weight
 	 */
     public void insert(UndirectedNode from, UndirectedNode to, int val) {
-    	// To complete
+		edges.add(new Triple<>(from, to, val));
+
+		percolateUp(edges.size() - 1);
     }
+
+	private void percolateUp(int src) {
+		int fatherIndex = getFatherIndex(src);
+		if (edges.get(fatherIndex).getThird() > edges.get(src).getThird()) {
+			swap(fatherIndex, src);
+			percolateUp(fatherIndex);
+		}
+	}
+
+	private int getFatherIndex(int src) {
+		return (src - 1) / 2;
+	}
 
     
     /**
@@ -41,13 +55,47 @@ public class BinaryHeapEdge {
 	 * 
 	 */
     public Triple<UndirectedNode,UndirectedNode,Integer> remove() {
-    	// To complete
-    	return null;
-        
-    }
-    
+		Triple<UndirectedNode,UndirectedNode,Integer> value = edges.get(0);
 
-    /**
+		swap(edges.size()-1, 0);
+
+		edges.remove(edges.size()-1);
+
+		percolateDown(0);
+		return value;
+    }
+
+	private void percolateDown(int src) {
+		if (isLeaf(src)) {
+			return;
+		}
+
+		int smallest = smallestChildIndex(src);
+
+		if (edges.get(src).getThird() > edges.get(smallest).getThird()) {
+			swap(src, smallest);
+
+			percolateDown(smallest);
+		}
+	}
+
+	private int smallestChildIndex(int src) {
+		int[] childs = getChildsIndex(src);
+		int smallestChildIndex = Integer.MAX_VALUE;
+		if (edges.size() > childs[1]){
+			smallestChildIndex = edges.get(childs[0]).getThird() > edges.get(childs[1]).getThird() ? childs[1] : childs[0];
+		}else if (edges.size() > childs[0]){
+			smallestChildIndex = childs[0];
+		}
+		return smallestChildIndex;
+	}
+
+	private int[] getChildsIndex(int src) {
+		return new int[]{src * 2 + 1, src * 2 + 2};
+	}
+
+
+	/**
 	 * From an edge indexed by src, find the child having the least weight and return it
 	 * 
 	 * @param src an index of the list edges
@@ -63,10 +111,7 @@ public class BinaryHeapEdge {
         }
     }
 
-    private boolean isLeaf(int src) {
-    	// A completer
-    	return false;
-    }
+    private boolean isLeaf(int src) { return edges.size() <= src * 2 + 1; }
 
     
     /**
@@ -170,9 +215,15 @@ public class BinaryHeapEdge {
             jarjarBin.insert(new UndirectedNode(k), new UndirectedNode(k+30), rand);            
             k--;
         }
-        // A completer
-        
-        System.out.println(jarjarBin.test());
+		jarjarBin.lovelyPrinting();
+
+        System.out.println("test : " + jarjarBin.test());
+
+		System.out.println("\nRemove root :");
+		jarjarBin.remove();
+		System.out.println("test : " + jarjarBin.test());
+		jarjarBin.lovelyPrinting();
+
     }
 
 }
