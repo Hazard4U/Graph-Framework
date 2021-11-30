@@ -141,6 +141,24 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         }
         return g;
     }
+
+    public boolean stronglyConnected() {
+
+        for(DirectedNode node: this.getNodes()) {
+            boolean[] visited = new boolean[this.getNbNodes()];
+
+            DFS(this, node.getLabel(), visited);
+
+            for (boolean b: visited)
+            {
+                if (!b) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
     
     @Override
     public String toString(){
@@ -199,6 +217,18 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         }
     }
 
+    private static void DFS(DirectedGraph graph, int from, boolean[] visited)
+    {
+        visited[from] = true;
+
+        for (Map.Entry<DirectedNode, Integer> entry: graph.getNodeOfList(new DirectedNode(from)).getSuccs().entrySet())
+        {
+            if (!visited[entry.getKey().getLabel()]) {
+                DFS(graph, entry.getKey().getLabel(), visited);
+            }
+        }
+    }
+
     public static void main(String[] args) {
         int[][] Matrix = GraphTools.generateGraphData(10, 20, false, false, false, 100001);
         GraphTools.afficherMatrix(Matrix);
@@ -215,5 +245,15 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         al.parcoursProfondeur();
         al.removeArc(zero, one);
         System.out.println("test remove : " + !al.isArc(zero, one));
+
+        int[][] connected = new int[][]{
+            {0, 1, 0, 0},
+            {0, 0, 1, 0},
+            {0, 0, 0, 1},
+            {1, 0, 0, 0}
+        };
+        DirectedGraph conn = new DirectedGraph(connected);
+
+        System.out.println("test connexe : " + conn.stronglyConnected());
     }
 }
