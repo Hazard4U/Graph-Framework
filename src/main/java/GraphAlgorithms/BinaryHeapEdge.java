@@ -55,11 +55,9 @@ public class BinaryHeapEdge {
 	 * 
 	 */
     public Triple<UndirectedNode,UndirectedNode,Integer> remove() {
-		Triple<UndirectedNode,UndirectedNode,Integer> value = edges.get(0);
-
 		swap(edges.size()-1, 0);
 
-		edges.remove(edges.size()-1);
+		Triple<UndirectedNode,UndirectedNode,Integer> value = edges.remove(edges.size()-1);
 
 		percolateDown(0);
 		return value;

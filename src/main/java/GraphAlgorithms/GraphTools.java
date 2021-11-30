@@ -1,9 +1,11 @@
 package GraphAlgorithms;
 
+import AdjacencyList.UndirectedGraph;
 import AdjacencyList.UndirectedValuedGraph;
 import Nodes.UndirectedNode;
 
 import java.util.*;
+import Collection.Triple;
 
 public class GraphTools {
 
@@ -220,6 +222,49 @@ public class GraphTools {
         return mat;
     }
 
+    public static UndirectedValuedGraph prim(UndirectedValuedGraph valuedGraph, UndirectedNode root) {
+        UndirectedValuedGraph primResult = new UndirectedValuedGraph(new int[valuedGraph.getNbNodes()][valuedGraph.getNbNodes()]);
+
+        Set<UndirectedNode> marked = new HashSet<>();
+        marked.add(root);
+
+        BinaryHeapEdge edges = new BinaryHeapEdge();
+
+        Queue<UndirectedNode> toVisit = new LinkedList<>();
+        toVisit.offer(root);
+
+        while (!toVisit.isEmpty()) {
+            UndirectedNode current = valuedGraph.getNodeOfList(toVisit.poll());
+
+            for (Map.Entry<UndirectedNode, Integer> entry: valuedGraph.getNodeOfList(current).getNeighbours().entrySet()) {
+                UndirectedNode neigh = entry.getKey();
+                int cost = entry.getValue();
+                if (!marked.contains(neigh)) {
+                    edges.insert(current, neigh, cost);
+                }
+            }
+
+            UndirectedNode origin;
+            UndirectedNode next;
+            int cost;
+
+            do {
+                Triple<UndirectedNode, UndirectedNode, Integer> edge = edges.remove();
+                origin = edge.getFirst();
+                next = edge.getSecond();
+                cost = edge.getThird();
+            } while (!edges.isEmpty() && marked.contains(next));
+
+            if (!edges.isEmpty()) {
+                primResult.addEdge(origin, next, cost);
+                marked.add(next);
+                toVisit.offer(next);
+            }
+
+        }
+
+        return primResult;
+    }
 
     public static void main(String[] args) {
         int[][] mat = generateGraphData(10, 20, false, false, false, 100001);
@@ -231,5 +276,20 @@ public class GraphTools {
         int[][] matVal = generateValuedGraphData(10, false, false, true, true, 100007);
         afficherMatrix(matVal);
 
+        // exemple du cours
+        int[][] graphMatrix = new int[][]{
+            { 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 6, 1, 5, 0, 0},
+            { 0, 6, 0, 5, 0, 3, 0},
+            { 0, 1, 5, 0, 5, 6, 4},
+            { 0, 5, 0, 5, 0, 0, 2},
+            { 0, 0, 3, 6, 0, 0, 6},
+            { 0, 0, 0, 4, 2, 6, 0}
+        };
+        afficherMatrix(graphMatrix);
+
+        UndirectedValuedGraph graph = new UndirectedValuedGraph(graphMatrix);
+        System.out.println(graph);
+        System.out.println(prim(graph, graph.getNodes().get(1)));
     }
 }
