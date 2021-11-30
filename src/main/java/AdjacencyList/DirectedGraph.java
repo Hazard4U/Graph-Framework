@@ -1,14 +1,11 @@
 package AdjacencyList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import Abstraction.AbstractListGraph;
 import Abstraction.IDirectedGraph;
 import GraphAlgorithms.GraphTools;
 import Nodes.DirectedNode;
+
+import java.util.*;
 
 public class DirectedGraph extends AbstractListGraph<DirectedNode> implements IDirectedGraph {
 
@@ -180,7 +177,28 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
             }
         }
     }
-    
+
+    public void parcoursProfondeur(){
+        HashMap<Integer, Boolean> mark = new HashMap<>();
+        for (DirectedNode node:getNodes()) {
+            mark.put(node.getLabel(), Boolean.FALSE);
+        }
+        DirectedNode firstNode = getNodes().get(0);
+        mark.put(0, Boolean.TRUE);
+        Stack<DirectedNode> toVisit = new Stack<>();
+        toVisit.add(firstNode);
+        while (!toVisit.isEmpty()){
+            DirectedNode currentNode = toVisit.pop();
+            System.out.println(currentNode.getLabel());
+            for (DirectedNode voisin: currentNode.getSuccs().keySet()) {
+                if (!mark.get(voisin.getLabel())){
+                    mark.put(voisin.getLabel(), Boolean.TRUE);
+                    toVisit.add(voisin);
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         int[][] Matrix = GraphTools.generateGraphData(10, 20, false, false, false, 100001);
         GraphTools.afficherMatrix(Matrix);
@@ -194,6 +212,7 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         System.out.println("test add : " + al.isArc(zero, one));
         al.parcoursLargeur();
         System.out.println(al.toString());
+        al.parcoursProfondeur();
         al.removeArc(zero, one);
         System.out.println("test remove : " + !al.isArc(zero, one));
     }
