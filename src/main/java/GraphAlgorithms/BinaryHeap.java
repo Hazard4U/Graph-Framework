@@ -132,7 +132,6 @@ public class BinaryHeap {
             k--;
         }
 
-        // A completer
         System.out.println("\n" + jarjarBin);
         System.out.println("test : " + jarjarBin.test());
 

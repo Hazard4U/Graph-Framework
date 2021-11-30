@@ -148,7 +148,6 @@ public class UndirectedGraph extends AbstractListGraph<UndirectedNode> implement
         UndirectedGraph al = new UndirectedGraph(mat);
         System.out.println(al);
         System.out.println(al.isEdge(new UndirectedNode(2), new UndirectedNode(5)));
-        // A completer
         al.removeEdge(new UndirectedNode(0), new UndirectedNode(3));
         System.out.println(al);
         al.addEdge(new UndirectedNode(0), new UndirectedNode(1));

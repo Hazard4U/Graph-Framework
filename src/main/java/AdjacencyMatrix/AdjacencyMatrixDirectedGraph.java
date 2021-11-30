@@ -114,7 +114,6 @@ public class AdjacencyMatrixDirectedGraph extends AbstractMatrixGraph<DirectedNo
 				am.matrix[j][i] = tmp;
 			}
 		}
-		// A completer
 		return am;
 	}
 

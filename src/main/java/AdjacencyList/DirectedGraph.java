@@ -1,12 +1,14 @@
 package AdjacencyList;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import Abstraction.AbstractListGraph;
+import Abstraction.IDirectedGraph;
 import GraphAlgorithms.GraphTools;
 import Nodes.DirectedNode;
-import Abstraction.IDirectedGraph;
 
 public class DirectedGraph extends AbstractListGraph<DirectedNode> implements IDirectedGraph {
 
@@ -126,8 +128,20 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
 
     @Override
     public IDirectedGraph computeInverse() {
-        DirectedGraph g = new DirectedGraph(this);
-        // A completer
+        DirectedGraph g = new DirectedGraph();
+        g.order = this.getNbNodes();
+        g.m = this.getNbArcs();
+        for(DirectedNode n : this.getNodes()) {
+            g.nodes.add(makeNode(n.getLabel()));
+        }
+        for (DirectedNode n : this.getNodes()) {
+            DirectedNode nn = g.getNodes().get(n.getLabel());
+            for (DirectedNode sn : n.getSuccs().keySet()) {
+                DirectedNode snn = g.getNodes().get(sn.getLabel());
+                nn.getSuccs().put(snn,0);
+                snn.getPreds().put(nn,0);
+            }
+        }
         return g;
     }
     
@@ -144,19 +158,42 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         s.append("\n");
         return s.toString();
     }
-
+    
+    public void parcoursLargeur(){
+        HashMap<Integer, Boolean> mark = new HashMap<>();
+        for (DirectedNode node:getNodes()) {
+            mark.put(node.getLabel(), Boolean.FALSE);
+        }
+        DirectedNode firstNode = getNodes().get(0);
+        mark.put(0, Boolean.TRUE);
+        
+        Queue<DirectedNode> toVisit = new LinkedList<>();
+        toVisit.add(firstNode);
+        while (!toVisit.isEmpty()){
+            DirectedNode currentNode = toVisit.poll();
+            System.out.println(currentNode.getLabel());
+            for (DirectedNode voisin: currentNode.getSuccs().keySet()) {
+                if (!mark.get(voisin.getLabel())){
+                    mark.put(voisin.getLabel(), Boolean.TRUE);
+                    toVisit.add(voisin);
+                }
+            }
+        }
+    }
+    
     public static void main(String[] args) {
         int[][] Matrix = GraphTools.generateGraphData(10, 20, false, false, false, 100001);
         GraphTools.afficherMatrix(Matrix);
         DirectedGraph al = new DirectedGraph(Matrix);
         System.out.println(al);
-        // A completer
 
         DirectedNode zero = al.makeNode(0);
         DirectedNode one = al.makeNode(1);
 
         al.addArc(zero, one);
         System.out.println("test add : " + al.isArc(zero, one));
+        al.parcoursLargeur();
+        System.out.println(al.toString());
         al.removeArc(zero, one);
         System.out.println("test remove : " + !al.isArc(zero, one));
     }
