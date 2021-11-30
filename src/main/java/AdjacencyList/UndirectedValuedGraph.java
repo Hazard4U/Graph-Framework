@@ -1,11 +1,13 @@
 package AdjacencyList;
 
+import Collection.Pair;
 import GraphAlgorithms.GraphTools;
 import Nodes.UndirectedNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class UndirectedValuedGraph extends UndirectedGraph {
 
@@ -72,6 +74,8 @@ public class UndirectedValuedGraph extends UndirectedGraph {
         // A completer
         System.out.println(al);
         al.dijkstra();
+        System.out.println(al);
+        al.bellman(al.getNodes().get(0));
     }
 
     public void dijkstra() {
@@ -98,6 +102,32 @@ public class UndirectedValuedGraph extends UndirectedGraph {
                         values.put(node.getLabel(), min + currentNode.getNeighbours().get(node));
                         predecesseur.put(node, currentNode);
                     }
+                }
+            }
+        }
+        System.out.println(values);
+        System.out.println(predecesseur);
+    }
+
+    public void bellman(UndirectedNode start){
+        HashMap<Integer, Integer> values = new HashMap<>();
+        HashMap<Pair<UndirectedNode, UndirectedNode>, Integer> edges = new HashMap<>();
+        HashMap<UndirectedNode, UndirectedNode> predecesseur = new HashMap<>();
+
+        for (UndirectedNode node:getNodes()){
+            for (Map.Entry<UndirectedNode, Integer> neighbour:node.getNeighbours().entrySet()){
+                edges.put(new Pair<>(node, neighbour.getKey()), neighbour.getValue());
+            }
+        }
+        values.put(start.getLabel(), 0);
+
+        for (UndirectedNode current:getNodes()){
+            for (Map.Entry<Pair<UndirectedNode, UndirectedNode>, Integer> edge :edges.entrySet()){
+                Integer pu = values.get(edge.getKey().getLeft().getLabel());
+                Integer pv = values.get(edge.getKey().getRight().getLabel());
+                if (pu != null && (pv == null || pv > pu + edge.getValue())){
+                    values.put(edge.getKey().getRight().getLabel(), pu + edge.getValue());
+                    predecesseur.put(edge.getKey().getRight(), edge.getKey().getLeft());
                 }
             }
         }
