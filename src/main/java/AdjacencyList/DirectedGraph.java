@@ -135,8 +135,8 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
             DirectedNode nn = g.getNodes().get(n.getLabel());
             for (DirectedNode sn : n.getSuccs().keySet()) {
                 DirectedNode snn = g.getNodes().get(sn.getLabel());
-                nn.getSuccs().put(snn,0);
-                snn.getPreds().put(nn,0);
+                nn.getPreds().put(snn,0);
+                snn.getSuccs().put(nn,0);
             }
         }
         return g;
@@ -229,6 +229,63 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         }
     }
 
+    public List<List<DirectedNode>> connectedComponents() {
+        List<DirectedNode> fin = new ArrayList<>(this.getNbNodes());
+
+        exploreGraphAndStoreFin(this, fin);
+
+        Collections.reverse(fin);
+
+        DirectedGraph inverse = (DirectedGraph) this.computeInverse();
+
+        List<List<DirectedNode>> components = new ArrayList<>();
+
+        exploreGraphWithFin(inverse, fin, components);
+
+        return components;
+    }
+
+    private void exploreGraphAndStoreFin(DirectedGraph graph, List<DirectedNode> fin) {
+        Set<DirectedNode> marked = new HashSet<>();
+        for (DirectedNode node: graph.getNodes()) {
+            if (!marked.contains(node)) {
+                exploreNodeAndStoreFin(node, marked, fin);
+            }
+        }
+    }
+
+    private void exploreNodeAndStoreFin(DirectedNode node, Set<DirectedNode> a, List<DirectedNode> fin) {
+        a.add(node);
+        for (DirectedNode succ: node.getSuccs().keySet()) {
+            if (!a.contains(succ)) {
+                exploreNodeAndStoreFin(succ, a, fin);
+            }
+        }
+        fin.add(node);
+    }
+
+    private void exploreGraphWithFin(DirectedGraph graph, List<DirectedNode> fin, List<List<DirectedNode>> components) {
+        Set<DirectedNode> marked = new HashSet<>();
+        for (DirectedNode n: fin) {
+            DirectedNode node = graph.getNodeOfList(n);
+            if (!marked.contains(node)) {
+                List<DirectedNode> group = new ArrayList<>();
+                exploreNodeAndStoreGroup(node, marked, group);
+                components.add(group);
+            }
+        }
+    }
+
+    private void exploreNodeAndStoreGroup(DirectedNode node, Set<DirectedNode> a, List<DirectedNode> group) {
+        a.add(node);
+        group.add(node);
+        for (DirectedNode succ: node.getSuccs().keySet()) {
+            if (!a.contains(succ)) {
+                exploreNodeAndStoreGroup(succ, a, group);
+            }
+        }
+    }
+
     public static void main(String[] args) {
         int[][] Matrix = GraphTools.generateGraphData(10, 20, false, false, false, 100001);
         GraphTools.afficherMatrix(Matrix);
@@ -247,13 +304,17 @@ public class DirectedGraph extends AbstractListGraph<DirectedNode> implements ID
         System.out.println("test remove : " + !al.isArc(zero, one));
 
         int[][] connected = new int[][]{
-            {0, 1, 0, 0},
-            {0, 0, 1, 0},
-            {0, 0, 0, 1},
-            {1, 0, 0, 0}
+            {0, 0, 0, 0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 1, 0, 0, 0},
+            {0, 0, 0, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 1},
+            {0, 0, 0, 0, 0, 0, 1, 0},
+            {1, 0, 1, 1, 0, 0, 0, 0},
+            {1, 1, 0, 1, 0, 0, 0, 0}
         };
         DirectedGraph conn = new DirectedGraph(connected);
 
-        System.out.println("test connexe : " + conn.stronglyConnected());
+        System.out.println("connected components : " + conn.connectedComponents());
     }
 }
